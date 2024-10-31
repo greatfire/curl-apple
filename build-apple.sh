@@ -40,7 +40,7 @@ build() {
     SDK=$3
     SDKDIR=$(xcrun --sdk ${SDK} --show-sdk-path)
     LOG="../${ARCH}-${SDK}_build.log"
-    echo "Building libcurl for ${ARCH}-${SDK}..."
+    echo "Building libcurl for ${ARCH}-${SDK}…"
 
     WORKDIR=curl_${ARCH}-${SDK}
     mkdir "${WORKDIR}"
@@ -48,7 +48,7 @@ build() {
     cd "${WORKDIR}"
 
     for FILE in $(find ../../patches -name '*.patch' 2>/dev/null); do
-        patch -p1 < ${FILE}
+        patch -p1 < "${FILE}"
     done
 
     export CC=$(xcrun -find -sdk ${SDK} gcc)
@@ -77,6 +77,12 @@ build arm64   arm     iphonesimulator
 build x86_64  x86_64  iphonesimulator
 build arm64   arm     macosx
 build x86_64  x86_64  macosx
+#build arm64   arm     appletvos
+#build arm64   arm     appletvsimulator
+#build x86_64  x86_64  appletvsimulator
+#build arm64   arm     watchos
+#build arm64   arm     watchsimulator
+#build x86_64  x86_64  watchsimulator
 
 cd ../
 
@@ -84,24 +90,49 @@ cd ../
 # PACKAGE #
 ###########
 
-lipo \
-   -arch arm64  ${BUILDDIR}/curl_arm64-iphonesimulator/artifacts/lib/libcurl.a \
-   -arch x86_64 ${BUILDDIR}/curl_x86_64-iphonesimulator/artifacts/lib/libcurl.a \
-   -create -output ${BUILDDIR}/libcurl.iphonesimulator.a
+fatten() {
+  SDK=$1
 
-lipo \
-   -arch arm64  ${BUILDDIR}/curl_arm64-macosx/artifacts/lib/libcurl.a \
-   -arch x86_64 ${BUILDDIR}/curl_x86_64-macosx/artifacts/lib/libcurl.a \
-   -create -output ${BUILDDIR}/libcurl.macosx.a
+  echo "Fatten ${SDK}…"
 
-rm -rf ${BUILDDIR}/iphoneos/curl.framework ${BUILDDIR}/iphonesimulator/curl.framework ${BUILDDIR}/macosx/curl.framework
-mkdir -p ${BUILDDIR}/iphoneos/curl.framework/Headers ${BUILDDIR}/iphonesimulator/curl.framework/Headers ${BUILDDIR}/macosx/curl.framework/Headers
-libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/iphoneos/curl.framework/curl ${BUILDDIR}/curl_arm64-iphoneos/artifacts/lib/libcurl.a
-cp -r ${BUILDDIR}/curl_arm64-iphoneos/artifacts/include/curl/*.h ${BUILDDIR}/iphoneos/curl.framework/Headers
-libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/iphonesimulator/curl.framework/curl ${BUILDDIR}/libcurl.iphonesimulator.a
-cp -r ${BUILDDIR}/curl_arm64-iphonesimulator/artifacts/include/curl/*.h ${BUILDDIR}/iphonesimulator/curl.framework/Headers
-libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/macosx/curl.framework/curl ${BUILDDIR}/libcurl.macosx.a
-cp -r ${BUILDDIR}/curl_arm64-macosx/artifacts/include/curl/*.h ${BUILDDIR}/macosx/curl.framework/Headers
+  lipo \
+     -arch arm64  "${BUILDDIR}/curl_arm64-${SDK}/artifacts/lib/libcurl.a" \
+     -arch x86_64 "${BUILDDIR}/curl_x86_64-${SDK}/artifacts/lib/libcurl.a" \
+     -create -output "${BUILDDIR}/libcurl.${SDK}.a"
+}
+
+fatten iphonesimulator
+fatten macosx
+#fatten appletvsimulator
+#fatten watchsimulator
+
+createlib() {
+  SDK=$1
+  IS_FAT=$2
+
+  rm -rf "${BUILDDIR:?}/${SDK}"
+  mkdir -p "${BUILDDIR}/${SDK}/curl.framework/Headers"
+
+  if [ -z "${IS_FAT}" ]; then
+    echo "Create lib for ${SDK}…"
+
+    libtool -no_warning_for_no_symbols -static -o "${BUILDDIR}/${SDK}/curl.framework/curl" "${BUILDDIR}/curl_arm64-${SDK}/artifacts/lib/libcurl.a"
+  else
+    echo "Create lib for fat ${SDK}…"
+
+    libtool -no_warning_for_no_symbols -static -o "${BUILDDIR}/${SDK}/curl.framework/curl" "${BUILDDIR}/libcurl.${SDK}.a"
+  fi
+
+  cp -r "${BUILDDIR}/curl_arm64-${SDK}/artifacts/include/curl"/*.h "${BUILDDIR}/${SDK}/curl.framework/Headers"
+}
+
+createlib iphoneos
+createlib iphonesimulator fat
+createlib macosx fat
+#createlib appletvos
+#createlib appletvsimulator fat
+#createlib watchos
+#createlib watchsimulator fat
 
 rm -rf curl.xcframework
 xcodebuild -create-xcframework \
@@ -109,4 +140,10 @@ xcodebuild -create-xcframework \
     -framework ${BUILDDIR}/iphonesimulator/curl.framework \
     -framework ${BUILDDIR}/macosx/curl.framework \
     -output curl.xcframework
-plutil -insert CFBundleVersion -string ${VERSION} curl.xcframework/Info.plist
+
+#    -framework ${BUILDDIR}/appletvos/curl.framework \
+#    -framework ${BUILDDIR}/appletvsimulator/curl.framework \
+#    -framework ${BUILDDIR}/watchos/curl.framework \
+#    -framework ${BUILDDIR}/watchsimulator/curl.framework \
+
+plutil -insert CFBundleVersion -string "${VERSION}" curl.xcframework/Info.plist

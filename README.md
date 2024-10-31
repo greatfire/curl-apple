@@ -2,6 +2,9 @@
 
 Pre-compiled libcurl framework for iOS and macOS applications! Automatically updated within 24-hours of a new release of curl.
 
+Let me know if you need tvOS and/or watchOS too.
+This project is prepared to provide these, but there's no point to waste space and time if nobody needs it.
+
 ## Using the pre-compiled framework
 
 1. Download and extract curl.xcframework.zip from the latest release
