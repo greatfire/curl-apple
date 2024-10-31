@@ -23,4 +23,5 @@ Use the included build script to compile a specific version or customize the con
 ./build-apple.sh <curl version> [optional configure parameters]
 ```
 
-The following config parameters are always provided: `--disable-shared`, `--enable-static`, `--with-secure-transport --without-libpsl`
+The following config parameters are always provided: `--disable-shared`, `--enable-static`, `--with-secure-transport`, 
+`--without-libpsl`, `--without-libidn2`, `--without-nghttp2`
