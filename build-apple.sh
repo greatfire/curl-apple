@@ -33,7 +33,7 @@ fi
 
 BUILDDIR=build
 
-function build() {
+build() {
     ARCH=$1
     HOST=$2
     SDK=$3
@@ -75,6 +75,8 @@ cd ${BUILDDIR}
 build arm64   arm     iphoneos
 build arm64   arm     iphonesimulator
 build x86_64  x86_64  iphonesimulator
+build arm64   arm     macosx
+build x86_64  x86_64  macosx
 
 cd ../
 
@@ -85,18 +87,26 @@ cd ../
 lipo \
    -arch arm64  ${BUILDDIR}/curl_arm64-iphonesimulator/artifacts/lib/libcurl.a \
    -arch x86_64 ${BUILDDIR}/curl_x86_64-iphonesimulator/artifacts/lib/libcurl.a \
-   -create -output ${BUILDDIR}/libcurl.a
+   -create -output ${BUILDDIR}/libcurl.iphonesimulator.a
 
-rm -rf ${BUILDDIR}/iphoneos/curl.framework ${BUILDDIR}/iphonesimulator/curl.framework
-mkdir -p ${BUILDDIR}/iphoneos/curl.framework/Headers ${BUILDDIR}/iphonesimulator/curl.framework/Headers
+lipo \
+   -arch arm64  ${BUILDDIR}/curl_arm64-macosx/artifacts/lib/libcurl.a \
+   -arch x86_64 ${BUILDDIR}/curl_x86_64-macosx/artifacts/lib/libcurl.a \
+   -create -output ${BUILDDIR}/libcurl.macosx.a
+
+rm -rf ${BUILDDIR}/iphoneos/curl.framework ${BUILDDIR}/iphonesimulator/curl.framework ${BUILDDIR}/macosx/curl.framework
+mkdir -p ${BUILDDIR}/iphoneos/curl.framework/Headers ${BUILDDIR}/iphonesimulator/curl.framework/Headers ${BUILDDIR}/macosx/curl.framework/Headers
 libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/iphoneos/curl.framework/curl ${BUILDDIR}/curl_arm64-iphoneos/artifacts/lib/libcurl.a
 cp -r ${BUILDDIR}/curl_arm64-iphoneos/artifacts/include/curl/*.h ${BUILDDIR}/iphoneos/curl.framework/Headers
-libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/iphonesimulator/curl.framework/curl ${BUILDDIR}/libcurl.a
+libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/iphonesimulator/curl.framework/curl ${BUILDDIR}/libcurl.iphonesimulator.a
 cp -r ${BUILDDIR}/curl_arm64-iphonesimulator/artifacts/include/curl/*.h ${BUILDDIR}/iphonesimulator/curl.framework/Headers
+libtool -no_warning_for_no_symbols -static -o ${BUILDDIR}/macosx/curl.framework/curl ${BUILDDIR}/libcurl.macosx.a
+cp -r ${BUILDDIR}/curl_arm64-macosx/artifacts/include/curl/*.h ${BUILDDIR}/macosx/curl.framework/Headers
 
 rm -rf curl.xcframework
 xcodebuild -create-xcframework \
     -framework ${BUILDDIR}/iphoneos/curl.framework \
     -framework ${BUILDDIR}/iphonesimulator/curl.framework \
+    -framework ${BUILDDIR}/macosx/curl.framework \
     -output curl.xcframework
 plutil -insert CFBundleVersion -string ${VERSION} curl.xcframework/Info.plist
