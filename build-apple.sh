@@ -9,6 +9,7 @@ fi
 VERSION=$1
 shift
 BUILD_ARGS="$@"
+BUILD_ARGS="--disable-shared --enable-static --with-secure-transport --without-libpsl --without-libidn2 --without-nghttp2 ${BUILD_ARGS}"
 
 ############
 # DOWNLOAD #
@@ -53,7 +54,6 @@ build() {
     export CC=$(xcrun -find -sdk ${SDK} gcc)
     export CFLAGS="-arch ${ARCH} -pipe -Os -gdwarf-2 -isysroot ${SDKDIR} -m${SDK}-version-min=12.0"
     export LDFLAGS="-arch ${ARCH} -isysroot ${SDKDIR}"
-    BUILD_ARGS="--disable-shared --enable-static --with-secure-transport --without-libpsl --without-libidn2 --without-nghttp2 ${BUILD_ARGS}"
 
     echo "build variables: CC=\"${CC}\" CFLAGS=\"${CFLAGS}\" LDFLAGS=\"${LDFLAGS}\"" >> "${LOG}"
     echo "configure parameters: ${BUILD_ARGS}" >> "${LOG}"
