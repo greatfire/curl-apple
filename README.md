@@ -5,6 +5,10 @@ Pre-compiled libcurl framework for iOS and macOS applications! Automatically upd
 Let me know if you need tvOS and/or watchOS too.
 This project is prepared to provide these, but there's no point to waste space and time if nobody needs it.
 
+If you want something more convenient to use curl in your projects, you might want to have a look at
+https://github.com/greatfire/SwiftyCurl.
+
+
 ## Using the pre-compiled framework
 
 1. Download and extract curl.xcframework.zip from the latest release
@@ -28,3 +32,10 @@ Use the included build script to compile a specific version or customize the con
 
 The following config parameters are always provided: `--disable-shared`, `--enable-static`, `--with-secure-transport`, 
 `--without-libpsl`, `--without-libidn2`, `--without-nghttp2`
+
+## Authors
+
+This project was originally deviced by Ian Spence:
+https://github.com/tls-inspector/curl-ios/
+
+MacOS extensions and minor improvements by Benjamin Erhart.
