@@ -31,7 +31,17 @@ Use the included build script to compile a specific version or customize the con
 ```
 
 The following config parameters are always provided: `--disable-shared`, `--enable-static`, `--with-secure-transport`, 
-`--without-libpsl`, `--without-libidn2`, `--without-nghttp2`
+`--with-openssl`, `--without-libpsl`, `--without-libidn2`, `--without-nghttp2`
+
+## TLS support
+
+The newer versions contain OpenSSL (which makes the xcframework significantly bigger, unfortunately), 
+because support for Apple's discontinued "SecureTransport" framework is going away.
+
+See https://daniel.haxx.se/blog/2025/01/14/secure-transport-support-in-curl-is-on-its-way-out/
+
+Upside: TLS 1.3 support
+Downside: No integrated support for certificates in the OS/user keychain.
 
 ## Authors
 
