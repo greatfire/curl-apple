@@ -115,6 +115,13 @@ build_libcurl() {
         gpg --verify "$ARCHIVE.asc" "$ARCHIVE" >/dev/null || exit
     fi
 
+    # https://curl.se/docs/caextract.html
+    CERTS="$BUILDDIR/cacert.pem"
+    if [ ! -f "$CERTS" ]; then
+        echo "- Download cacert file"
+        curl "https://curl.se/ca/cacert.pem" > "$CERTS"
+    fi
+
     echo "- Build libcurl for $ARCH ($SDK)"
 
     # curl build writes compiled files into source dir, so clean up, by removing and unpacking again.
@@ -173,13 +180,14 @@ create_framework() {
     IS_FAT=$2
 
     mkdir -p "$BUILDDIR/$SDK/curl.framework/Headers"
+    mkdir -p "$BUILDDIR/$SDK/curl.framework/Resources"
 
     if [ -z "$IS_FAT" ]; then
         echo "- Create framework for $SDK"
 
         POSTFIX="-arm64"
     else
-        echo "Create framework for fat $SDK"
+        echo "- Create framework for fat $SDK"
 
         POSTFIX=""
       fi
@@ -194,6 +202,8 @@ create_framework() {
         "$BUILDDIR/$SDK/libcurl-arm64/include/curl"/*)
 
     cp -r "${HEADERS[@]}" "$BUILDDIR/$SDK/curl.framework/Headers"
+
+    cp "$BUILDDIR/cacert.pem" "$BUILDDIR/$SDK/curl.framework/Resources"
 }
 
 
