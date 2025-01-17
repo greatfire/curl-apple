@@ -10,7 +10,7 @@ OPENSSL_VERSION="openssl-3.4.0"
 VERSION=$1
 shift
 BUILD_ARGS="$@"
-BUILD_ARGS="--disable-shared --enable-static --with-secure-transport --with-openssl --without-libpsl --without-libidn2 --without-nghttp2 ${BUILD_ARGS}"
+BUILD_ARGS="--disable-shared --enable-static --with-openssl --without-libpsl --without-libidn2 --without-nghttp2 ${BUILD_ARGS}"
 
 cd "$(dirname "$0")" || exit
 ROOT="$(pwd -P)"
