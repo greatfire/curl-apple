@@ -17,7 +17,7 @@ ROOT="$(pwd -P)"
 
 BUILDDIR="$ROOT/build"
 
-#rm -rf "$BUILDDIR"
+rm -rf "$BUILDDIR"
 mkdir -p "$BUILDDIR"
 cd "$BUILDDIR" || exit
 
