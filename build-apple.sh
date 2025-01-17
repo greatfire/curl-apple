@@ -191,7 +191,7 @@ create_framework() {
     libtool -no_warning_for_no_symbols -static -o "$BUILDDIR/$SDK/curl.framework/curl" "${LIBS[@]}"
 
     HEADERS=("$BUILDDIR/$SDK/libssl-arm64/include"/* \
-        "$BUILDDIR/$SDK/libcurl-arm64/include"/*)
+        "$BUILDDIR/$SDK/libcurl-arm64/include/curl"/*)
 
     cp -r "${HEADERS[@]}" "$BUILDDIR/$SDK/curl.framework/Headers"
 }
