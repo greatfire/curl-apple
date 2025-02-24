@@ -229,7 +229,7 @@ build_libcurl     macosx            x86_64  10.13
 fatten            macosx            libcurl
 create_framework  macosx            fat
 
-rm -rf curl.xcframework
+rm -rf "$ROOT/curl.xcframework"
 xcodebuild -create-xcframework \
     -framework "$BUILDDIR/iphoneos/curl.framework" \
     -framework "$BUILDDIR/iphonesimulator/curl.framework" \
