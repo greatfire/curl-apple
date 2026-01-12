@@ -45,7 +45,7 @@ Downside: No integrated support for certificates in the OS/user keychain.
 
 ## Authors
 
-This project was originally deviced by Ian Spence:
+This project was originally devised by Ian Spence:
 https://github.com/tls-inspector/curl-ios/
 
 MacOS extensions and minor improvements by Benjamin Erhart.
