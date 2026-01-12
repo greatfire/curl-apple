@@ -204,6 +204,25 @@ create_framework() {
     cp -r "${HEADERS[@]}" "$BUILDDIR/$SDK/curl.framework/Headers"
 
     cp "$BUILDDIR/cacert.pem" "$BUILDDIR/$SDK/curl.framework/Resources"
+
+    cat > "$BUILDDIR/$SDK/curl.framework/Info.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>curl</string>
+  <key>CFBundleIdentifier</key>
+  <string>org.greatfire.curl</string>
+  <key>CFBundlePackageType</key>
+  <string>FMWK</string>
+  <key>CFBundleSupportedPlatforms</key>
+  <array>
+    <string>${SDK}</string>
+  </array>
+</dict>
+</plist>
+EOF
 }
 
 
