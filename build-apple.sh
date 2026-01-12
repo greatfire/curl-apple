@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
-OPENSSL_VERSION="openssl-3.5.0"
+OPENSSL_VERSION="openssl-3.6.0"
 
 VERSION=$1
 shift
