@@ -205,6 +205,7 @@ create_framework() {
 
     cp "$BUILDDIR/cacert.pem" "$BUILDDIR/$SDK/curl.framework/Resources"
 
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102088
     cat > "$BUILDDIR/$SDK/curl.framework/Info.plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -214,12 +215,20 @@ create_framework() {
   <string>curl</string>
   <key>CFBundleIdentifier</key>
   <string>org.greatfire.curl</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>curl</string>
   <key>CFBundlePackageType</key>
   <string>FMWK</string>
+  <key>CFBundleShortVersionString</key>
+  <string>${VERSION}</string>
   <key>CFBundleSupportedPlatforms</key>
   <array>
     <string>${SDK}</string>
   </array>
+  <key>CFBundleVersion</key>
+  <string>${VERSION}</string>
 </dict>
 </plist>
 EOF
